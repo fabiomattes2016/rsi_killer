@@ -13,7 +13,6 @@ from telegram import send_telegram
 load_dotenv()
 colorama_init()
 
-@staticmethod
 def conectar_binance() -> ccxt.binance:
     BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
     BINANCE_SECRET_KEY = os.getenv("BINANCE_SECRET_KEY")
@@ -30,12 +29,11 @@ def conectar_binance() -> ccxt.binance:
     
     return binance
 
-@staticmethod
 def get_candles(binance: ccxt.binance, symbol: str, timeframe: str, limit: int) -> pd.DataFrame:
     timeframe_in_ms = binance.parse_timeframe(timeframe) * 1000
-    now = int(time.time() * 1000)
-    since = now - (limit * timeframe_in_ms)
-    bars = binance.fetch_ohlcv(symbol=symbol, timeframe=timeframe, since=since, limit=limit)
+    # now = int(time.time() * 1000)
+    # since = now - (limit * timeframe_in_ms)
+    bars = binance.fetch_ohlcv(symbol=symbol, timeframe=timeframe, limit=limit)
     
     df_candles = pd.DataFrame(bars, columns=['time', 'abertura', 'max', 'min', 'fechamento', 'volume'])
     df_candles['time'] = pd.to_datetime(
@@ -99,14 +97,17 @@ class Estrategias:
         print(f'{Fore.GREEN}🚀 Iniciando estratégia RSI Killer no par {self.symbol}...{Style.RESET_ALL}')
         
         def job():
-            self.binance.set_margin_mode('isolated', f'{self.symbol}:USDT')
-            self.binance.set_leverage(self.leverage, f'{self.symbol}:USDT')
+            self.binance.set_margin_mode('isolated', f'{self.symbol}')
+            self.binance.set_leverage(self.leverage, f'{self.symbol}')
             
             self.gerenciamento_risco.fecha_pnl(self.symbol, self.loss, self.target, timeframe=timeframe)
             
             candles = get_candles(self.binance, self.symbol, timeframe, limit)
             
-            price = self.binance.fetch_trades(symbol=self.symbol, limit=1)[0]['price']
+            # price = self.binance.fetch_trades(symbol=self.symbol, limit=1)[0]['price']
+            ticker = self.binance.fetch_ticker(self.symbol)
+            price = ticker['last']  # ou ticker['close']
+            
             price = float(self.binance.price_to_precision(self.symbol, price))
             
             # novo dataframe = candles recebido
@@ -121,26 +122,34 @@ class Estrategias:
             
             print(f'{Fore.CYAN}=================================================================={Style.RESET_ALL}')
             print(f'{Fore.CYAN}📊 Analisando candles para {self.symbol}...{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}📈 RSI:         {df_candles.iloc[-2]["RSI"]}{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}📈 BB UPPER:    {df_candles.iloc[-2][f"BBU_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}📈 BB MIDDLE:   {df_candles.iloc[-2][f"BBM_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}📈 BB LOWER:    {df_candles.iloc[-2][f"BBL_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}📈 Largura BB:  {df_candles.iloc[-2]["largura"]}{Style.RESET_ALL}')
-            print(f'{Fore.CYAN}💲 Preço atual: {price}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}📈 RSI:              {df_candles.iloc[-2]["RSI"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}📈 BB UPPER:         {df_candles.iloc[-2][f"BBU_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}📈 BB MIDDLE:        {df_candles.iloc[-2][f"BBM_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}📈 BB LOWER:         {df_candles.iloc[-2][f"BBL_{bb_length}_{bb_std}.0_{bb_std}.0"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}📈 Largura BB:       {df_candles.iloc[-2]["largura"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}💲 Preço abertura:   {df_candles.iloc[-2][f"abertura"]}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}💲 Preço atual:      {price}{Style.RESET_ALL}')
+            print(f'{Fore.CYAN}💲 Preço fechamento: {df_candles.iloc[-2][f"fechamento"]}{Style.RESET_ALL}')
             print(f'{Fore.CYAN}=================================================================={Style.RESET_ALL}')
             
             if self.gerenciamento_risco.posicao_max(symbol=self.symbol, max_pos=self.posicao_max):
                 print(f'{Fore.YELLOW}⚠️ [{self.symbol}] - Posição máxima atingida!{Style.RESET_ALL}')
             else:
                 # lógica de entrada (long)
+                # if (
+                #     df_candles.iloc[-2]['RSI'] <= rsi_sobrevenda
+                #     and df_candles.iloc[-3]['fechamento'] <= df_candles.iloc[-3][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
+                #     and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2]['abertura']  # candle de reversão
+                #     and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
+                #     and df_candles.iloc[-2]['largura'] >= threshold
+                #     and price > df_candles.iloc[-2]['max'] 
+                #     and corpo / range_candle > 0.6
+                # ):
                 if (
                     df_candles.iloc[-2]['RSI'] <= rsi_sobrevenda
-                    and df_candles.iloc[-3]['fechamento'] <= df_candles.iloc[-3][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
-                    and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2]['abertura']  # candle de reversão
-                    and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
+                    and df_candles.iloc[-2]['fechamento'] <= df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
+                    and price >= df_candles.iloc[-2]['max']
                     and df_candles.iloc[-1]['largura'] >= threshold
-                    and df_candles.iloc[-1]['fechamento'] > df_candles.iloc[-2]['max']
-                    and corpo / range_candle < 0.6
                 ):
                     print(f'{Fore.GREEN}🚩 [{self.symbol}] - Entrando em long!{Style.RESET_ALL}')
                     # send_telegram(f'🚩 Entrando em long!')
@@ -157,14 +166,20 @@ class Estrategias:
                     except Exception as e:
                         print(f'{Fore.RED}🚨 Erro ao criar ordem: {e}{Style.RESET_ALL}')
                 # lógica de entrada (short)
+                # elif (
+                #     df_candles.iloc[-2]['RSI'] >= rsi_sobrecompra
+                #     and df_candles.iloc[-3]['fechamento'] >= df_candles.iloc[-3][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']
+                #     and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2]['abertura']  # candle de reversão
+                #     and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
+                #     and df_candles.iloc[-2]['largura'] >= threshold
+                #     and price < df_candles.iloc[-2]['min']
+                #     and corpo / range_candle > 0.6
+                # ):
                 elif (
                     df_candles.iloc[-2]['RSI'] >= rsi_sobrecompra
-                    and df_candles.iloc[-3]['fechamento'] >= df_candles.iloc[-3][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']
-                    and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2]['abertura']  # candle de reversão
-                    and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
+                    and df_candles.iloc[-2]['fechamento'] >= df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
+                    and price <= df_candles.iloc[-2]['max']
                     and df_candles.iloc[-1]['largura'] >= threshold
-                    and df_candles.iloc[-1]['fechamento'] < df_candles.iloc[-2]['min']
-                    and corpo / range_candle < 0.6
                 ):
                     print(f'{Fore.RED}🚩 [{self.symbol}] - Entrando em short!{Style.RESET_ALL}')
                     # send_telegram(f'🚩 Entrando em short!')
@@ -187,5 +202,6 @@ class Estrategias:
         while True:
             try:
                 schedule.run_pending()
+                time.sleep(1)
             except Exception as e:
                 print(f'{Fore.RED}🚨 Erro: {e}{Style.RESET_ALL}')

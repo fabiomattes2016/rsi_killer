@@ -15,9 +15,9 @@ colorama_init()
 # Definição do par de trading principal
 symbol = os.getenv("SYMBOL")
 # Definição do stop loss em percentual (-1%)
-loss = int(os.getenv("LOSS"))
+loss = float(os.getenv("LOSS"))
 # Definição do take profit em percentual (2%)
-target = int(os.getenv("TARGET"))
+target = float(os.getenv("TARGET"))
 # Definição do tamanho máximo da posição
 posicao_max = float(os.getenv("POSICAO_MAX"))
 # Definição do tamanho padrão da posição
@@ -37,7 +37,7 @@ threshold = float(os.getenv("THRESHOLD"))
 
 # Função que executa a estratégia RSI Killer
 def bot_rsi_killer():
-    estrategias.rsi_killer(rsi_sobrecompra=rsi_sobrecompra, rsi_sobrevenda=rsi_sobrevenda, bb_length=bb_length, bb_std=bb_std, threshold=threshold, schedule_time=20)
+    estrategias.rsi_killer(rsi_sobrecompra=rsi_sobrecompra, rsi_sobrevenda=rsi_sobrevenda, bb_length=bb_length, bb_std=bb_std, threshold=threshold, schedule_time=10, limit=35)
 
 # Bloco principal que executa quando o script é rodado diretamente
 if __name__ == "__main__":

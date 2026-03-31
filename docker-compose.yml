@@ -9,13 +9,13 @@ services:
       SYMBOL: "ETH/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 0.02
-      POSICAO: 0.01
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 0.20
+      POSICAO: 0.10
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
 
   rsi-killer-binance-sol:
@@ -28,13 +28,32 @@ services:
       SYMBOL: "SOL/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 0.20
-      POSICAO: 0.15
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 2.0
+      POSICAO: 1.0
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
+      LEVERAGE: 10
+
+  rsi-killer-binance-bnb:
+    image: rsi-killer-binance:latest
+    container_name: rsi-killer-binance-bnb
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SYMBOL: "BNB/USDT"
+      LOSS: -1
+      TARGET: 2
+      POSICAO_MAX: 0.5
+      POSICAO: 0.3
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
+      BB_LENGTH: 20
+      BB_STD: 2
+      THRESHOLD: 0.020
       LEVERAGE: 10
 
   rsi-killer-binance-doge:
@@ -47,15 +66,15 @@ services:
       SYMBOL: "DOGE/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 1000.00
-      POSICAO: 850.00
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 1000
+      POSICAO: 500
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
-  
+
   rsi-killer-binance-link:
     image: rsi-killer-binance:latest
     container_name: rsi-killer-binance-link
@@ -66,125 +85,87 @@ services:
       SYMBOL: "LINK/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 2
-      POSICAO: 3
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 10
+      POSICAO: 5
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
-  
-  rsi-killer-binance-avax:
+
+  rsi-killer-binance-ada:
     image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-avax
+    container_name: rsi-killer-binance-ada
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      SYMBOL: "AVAX/USDT"
+      SYMBOL: "ADA/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 5
-      POSICAO: 3
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 300
+      POSICAO: 150
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
-  
-  rsi-killer-binance-arb:
+
+  rsi-killer-binance-dot:
     image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-arb
+    container_name: rsi-killer-binance-dot
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      SYMBOL: "ARB/USDT"
-      LOSS: -1
-      TARGET: 2
-      POSICAO_MAX: 350
-      POSICAO: 200
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
-      BB_LENGTH: 20
-      BB_STD: 2
-      THRESHOLD: 0.003
-      LEVERAGE: 10
-  
-  rsi-killer-binance-op:
-    image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-op
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      SYMBOL: "OP/USDT"
-      LOSS: -1
-      TARGET: 2
-      POSICAO_MAX: 350
-      POSICAO: 200
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
-      BB_LENGTH: 20
-      BB_STD: 2
-      THRESHOLD: 0.003
-      LEVERAGE: 10
-  
-  rsi-killer-binance-apt:
-    image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-apt
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      SYMBOL: "APT/USDT"
+      SYMBOL: "DOT/USDT"
       LOSS: -1
       TARGET: 2
       POSICAO_MAX: 30
-      POSICAO: 20
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO: 15
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
-  
-  rsi-killer-binance-inj:
+
+  rsi-killer-binance-xrp:
     image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-inj
+    container_name: rsi-killer-binance-xrp
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      SYMBOL: "INJ/USDT"
+      SYMBOL: "XRP/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 9
-      POSICAO: 7
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 500
+      POSICAO: 250
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
-  
-  rsi-killer-binance-near:
+
+  rsi-killer-binance-uni:
     image: rsi-killer-binance:latest
-    container_name: rsi-killer-binance-near
+    container_name: rsi-killer-binance-uni
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      SYMBOL: "NEAR/USDT"
+      SYMBOL: "UNI/USDT"
       LOSS: -1
       TARGET: 2
-      POSICAO_MAX: 35
-      POSICAO: 20
-      RSI_SOBRECOMPRA: 80
-      RSI_SOBREVENDA: 20
+      POSICAO_MAX: 20
+      POSICAO: 10
+      RSI_SOBRECOMPRA: 72
+      RSI_SOBREVENDA: 28
       BB_LENGTH: 20
       BB_STD: 2
-      THRESHOLD: 0.003
+      THRESHOLD: 0.020
       LEVERAGE: 10
