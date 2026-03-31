@@ -1,0 +1,18 @@
+[project]
+name = "trade-bots"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ccxt>=4.5.45",
+    "colorama>=0.4.6",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "marimo>=0.21.1",
+    "pandas>=2.3.3",
+    "pandas-ta>=0.4.71b0",
+    "python-dotenv>=1.2.2",
+    "schedule>=1.2.2",
+    "ta>=0.11.0",
+]
