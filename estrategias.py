@@ -116,6 +116,9 @@ class Estrategias:
             df_candles = self.indicadores.calcular_bb(df_candles, length=bb_length, std=bb_std)
             df_candles['largura'] = (df_candles[f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0'] - df_candles[f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']) / df_candles[f'BBM_{bb_length}_{bb_std}.0_{bb_std}.0']
             
+            corpo = abs(df_candles.iloc[-2]['fechamento'] - df_candles.iloc[-2]['abertura'])
+            range_candle = df_candles.iloc[-2]['max'] - df_candles.iloc[-2]['min']
+            
             print(f'{Fore.CYAN}=================================================================={Style.RESET_ALL}')
             print(f'{Fore.CYAN}📊 Analisando candles para {self.symbol}...{Style.RESET_ALL}')
             print(f'{Fore.CYAN}📈 RSI:         {df_candles.iloc[-2]["RSI"]}{Style.RESET_ALL}')
@@ -136,6 +139,8 @@ class Estrategias:
                     and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2]['abertura']  # candle de reversão
                     and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
                     and df_candles.iloc[-1]['largura'] >= threshold
+                    and df_candles.iloc[-1]['fechamento'] > df_candles.iloc[-2]['max']
+                    and corpo / range_candle < 0.6
                 ):
                     print(f'{Fore.GREEN}🚩 [{self.symbol}] - Entrando em long!{Style.RESET_ALL}')
                     # send_telegram(f'🚩 Entrando em long!')
@@ -158,6 +163,8 @@ class Estrategias:
                     and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2]['abertura']  # candle de reversão
                     and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
                     and df_candles.iloc[-1]['largura'] >= threshold
+                    and df_candles.iloc[-1]['fechamento'] < df_candles.iloc[-2]['min']
+                    and corpo / range_candle < 0.6
                 ):
                     print(f'{Fore.RED}🚩 [{self.symbol}] - Entrando em short!{Style.RESET_ALL}')
                     # send_telegram(f'🚩 Entrando em short!')
