@@ -132,8 +132,9 @@ class Estrategias:
                 # lógica de entrada (long)
                 if (
                     df_candles.iloc[-2]['RSI'] <= rsi_sobrevenda
-                    and df_candles.iloc[-2]['fechamento'] <= df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
-                    and price >= df_candles.iloc[-2]['max']
+                    and df_candles.iloc[-3]['fechamento'] <= df_candles.iloc[-3][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
+                    and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2]['abertura']  # candle de reversão
+                    and df_candles.iloc[-2]['fechamento'] > df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
                     and df_candles.iloc[-1]['largura'] >= threshold
                 ):
                     print(f'{Fore.GREEN}🚩 [{self.symbol}] - Entrando em long!{Style.RESET_ALL}')
@@ -153,8 +154,9 @@ class Estrategias:
                 # lógica de entrada (short)
                 elif (
                     df_candles.iloc[-2]['RSI'] >= rsi_sobrecompra
-                    and df_candles.iloc[-2]['fechamento'] >= df_candles.iloc[-2][f'BBL_{bb_length}_{bb_std}.0_{bb_std}.0']
-                    and price <= df_candles.iloc[-2]['max']
+                    and df_candles.iloc[-3]['fechamento'] >= df_candles.iloc[-3][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']
+                    and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2]['abertura']  # candle de reversão
+                    and df_candles.iloc[-2]['fechamento'] < df_candles.iloc[-2][f'BBU_{bb_length}_{bb_std}.0_{bb_std}.0']  # voltou pra dentro da banda
                     and df_candles.iloc[-1]['largura'] >= threshold
                 ):
                     print(f'{Fore.RED}🚩 [{self.symbol}] - Entrando em short!{Style.RESET_ALL}')
