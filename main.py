@@ -42,7 +42,7 @@ def bot_rsi_killer():
 # Bloco principal que executa quando o script é rodado diretamente
 if __name__ == "__main__":
     # Cancela todas as ordens pendentes para o símbolo principal antes de iniciar
-    gerenciamento_risco.cancelar_totas_as_ordens(symbol)
+    gerenciamento_risco.cancelar_todas_as_ordens(symbol)
 
     # Imprime mensagem colorida indicando o início dos bots
     print(f"{Fore.GREEN}🏁 Iniciando bots...{Style.RESET_ALL}")
