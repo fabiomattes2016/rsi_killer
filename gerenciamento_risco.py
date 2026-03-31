@@ -254,7 +254,7 @@ class GerenciamentoRisco:
             
             return False
 
-    def cancelar_totas_as_ordens(self, symbol):
+    def cancelar_todas_as_ordens(self, symbol):
         """
         Cancela todas as ordens pendentes para um determinado símbolo.
 
